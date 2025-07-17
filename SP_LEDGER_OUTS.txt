@@ -1,0 +1,90 @@
+USE [mazuagricusmssql01-db-db]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_AddCustomerLedgerFromSAP]    Script Date: 17-07-2025 15:16:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[SP_AddCustomerLedgerFromSAP]
+    @CompanyCode BIGINT,
+    @CustomerCode NVARCHAR(MAX),
+    @Document_Type NVARCHAR(MAX),
+    @Document_Number NVARCHAR(MAX),
+    @Credit_Control_Area NVARCHAR(MAX),
+    @Document_Date DATE,
+    @Net_Due_Date DATE,
+    @Posting_Date DATE,
+    @Arrears_by_Net_Due_Date DECIMAL(18, 2),
+    @Credit_Control_Area_Currency NVARCHAR(MAX),
+    @Baseline_Payment_Date DATE,
+    @Amount_in_Local_Currency DECIMAL(18, 2),
+    @Clearing_Date DATE,
+    @Clearing_Document NVARCHAR(MAX),
+    @Assignment NVARCHAR(MAX),
+    @Reference NVARCHAR(MAX),
+    @Text NVARCHAR(MAX),
+    @Account NVARCHAR(MAX),
+    @Document_Header_Text NVARCHAR(MAX),
+    @UserCode NVARCHAR(MAX),
+    @GLAccount NVARCHAR(MAX),
+	 @UpdateBy NVARCHAR(MAX)
+AS
+BEGIN
+    INSERT INTO TB_CustomerLedger
+    (
+        CompanyCode, CustomerCode, Document_Type, Document_Number, Credit_Control_Area,
+        Document_Date, Net_Due_Date, Posting_Date, Arrears_by_Net_Due_Date,
+        Credit_Control_Area_Currency, Baseline_Payment_Date, Amount_in_Local_Currency,
+        Clearing_Date, Clearing_Document, Assignment, Reference, Text,
+        Account, Document_Header_Text, UserCode, GLAccount,UpdateBy
+    )
+    VALUES
+    (
+        @CompanyCode, @CustomerCode, @Document_Type, @Document_Number, @Credit_Control_Area,
+        @Document_Date, @Net_Due_Date, @Posting_Date, @Arrears_by_Net_Due_Date,
+        @Credit_Control_Area_Currency, @Baseline_Payment_Date, @Amount_in_Local_Currency,
+        @Clearing_Date, @Clearing_Document, @Assignment, @Reference, @Text,
+        @Account, @Document_Header_Text, @UserCode, @GLAccount, @UpdateBy
+    )
+END
+------------------------------------------------------------------------------------------------------------------------------------------------
+USE [mazuagricusmssql01-db-db]
+GO
+/****** Object:  StoredProcedure [dbo].[InsertCustomerAgeingReport]    Script Date: 17-07-2025 15:19:32 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertCustomerAgeingReport]
+    @CompanyCode BIGINT,
+    @CustomerCode NVARCHAR(50),
+    @CustomerName NVARCHAR(MAX),
+    @D0_30 DECIMAL(18, 2),
+    @D31_60 DECIMAL(18, 2),
+    @D61_90 DECIMAL(18, 2),
+    @D91_120 DECIMAL(18, 2),
+    @D121_150 DECIMAL(18, 2),
+    @D151_180 DECIMAL(18, 2),
+    @D181_210 DECIMAL(18, 2),
+    @D210_365 DECIMAL(18, 2),
+    @Over365 DECIMAL(18, 2),
+    @TLAMT DECIMAL(18, 2),
+    @GLAccount NVARCHAR(50),
+    @UpdatedBy NVARCHAR(100)
+AS
+BEGIN
+    INSERT INTO TB_CustomerAgeingReport (
+        CompanyCode, CustomerCode, CustomerName,
+        [0_30_Days], [31_60_Days], [61_90_Days],
+        [91_120_Days], [121_150_Days], [151_180_Days],
+        [181_210_Days], [210_365_Days], [Over_365_Days],
+        TLAMT, GLAccount, updated_by
+    )
+    VALUES (
+        @CompanyCode, @CustomerCode, @CustomerName,
+        @D0_30, @D31_60, @D61_90,
+        @D91_120, @D121_150, @D151_180,
+        @D181_210, @D210_365, @Over365,
+        @TLAMT, @GLAccount, @UpdatedBy
+    );
+END;
