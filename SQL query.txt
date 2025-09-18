@@ -1,0 +1,25 @@
+SELECT 
+    c.CustomerCode,
+    c.CustomerName,
+    ([0_30_Days] + [31_60_Days] + [61_90_Days]) AS Outstanding_Upto_90,
+    c.TLAMT,
+    CASE 
+        WHEN u.UserCode IS NOT NULL THEN 'Present in Users'
+        ELSE 'Not in Users'
+    END AS UserStatus
+FROM TB_CustomerAgeingReport c
+LEFT JOIN Users u
+       ON c.CompanyCode = u.CompanyCode
+      AND c.CustomerCode = u.UserCode   -- if CustomerCode maps to UserCode
+      -- OR use c.CustomerCode = u.RepManCode (if mapping is with RepManCode)
+WHERE ISNULL([91_120_Days], 0) = 0
+  AND ISNULL([121_150_Days], 0) = 0
+  AND ISNULL([151_180_Days], 0) = 0
+  AND ISNULL([181_210_Days], 0) = 0
+  AND ISNULL([210_365_Days], 0) = 0
+  AND ISNULL([Over_365_Days], 0) = 0
+  AND (
+        ISNULL([0_30_Days], 0) > 0
+     OR ISNULL([31_60_Days], 0) > 0
+     OR ISNULL([61_90_Days], 0) > 0
+      );
