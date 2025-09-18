@@ -1,0 +1,20 @@
+SELECT
+    c.CompanyCode,
+    c.CustomerCode,
+    c.CustomerName,
+    c.TLAMT,
+    0 AS Outstanding_Total
+FROM TB_CustomerAgeingReport c
+INNER JOIN Users u
+       ON u.CompanyCode = c.CompanyCode
+      AND u.UserCode   = c.CustomerCode   -- or swap to u.RepManCode if that's your mapping
+WHERE COALESCE([0_30_Days], 0)
+    + COALESCE([31_60_Days], 0)
+    + COALESCE([61_90_Days], 0)
+    + COALESCE([91_120_Days], 0)
+    + COALESCE([121_150_Days], 0)
+    + COALESCE([151_180_Days], 0)
+    + COALESCE([181_210_Days], 0)
+    + COALESCE([210_365_Days], 0)
+    + COALESCE([Over_365_Days], 0) = 0
+  AND COALESCE(c.TLAMT, 0) = 0;   -- keep if TLAMT should also be zero
